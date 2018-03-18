@@ -9,6 +9,9 @@ namespace TabScrollControl
 {
     public partial class TabScrollContainer
     {
+        /// <summary>
+        /// připravený seznam sekcí, pro zobrazení v komponentě
+        /// </summary>
         private List<Tuple<object, UserControl>> m_viewSections = new List<Tuple<object, UserControl>>();
 
         public static readonly DependencyProperty SekceAsTabProperty = DependencyProperty.Register("SekceAsTab", typeof(bool), typeof(TabScrollContainer), new PropertyMetadata(OnSekceAsTabChanged));
@@ -19,6 +22,9 @@ namespace TabScrollControl
 
         public static readonly DependencyProperty IndextTitleProperty = DependencyProperty.Register("IndextTitle", typeof(string), typeof(TabScrollContainer), new PropertyMetadata(OnIndextTitleChanged));
 
+        /// <summary>
+        /// Konstruktor
+        /// </summary>
         public TabScrollContainer()
         {
             InitializeComponent();
@@ -27,6 +33,7 @@ namespace TabScrollControl
 
             Loaded += (sender, args) =>
             {
+                // jen pro lepší zobrazení v designe režimu
                 var isDesign = DesignerProperties.GetIsInDesignMode(this);
                 if (isDesign)
                 {
@@ -42,7 +49,10 @@ namespace TabScrollControl
             };
         }
 
-        public void Init()
+        /// <summary>
+        /// Inicializace komponenty - volána primárně při nastavení/přiřazení sekcí
+        /// </summary>
+        private void Init()
         {            
             TabMain.Items.Clear();
             StackMain.Children.Clear();
@@ -53,23 +63,29 @@ namespace TabScrollControl
             
             m_viewSections = new List<Tuple<object, UserControl>>();
 
+            // vytvoříme tlačítka v osnově
             foreach (var s in Sekce)
             {
-                var btn = new Button();
-                btn.Content = s.ToString();
+                var btn = new Button {Content = s.ToString()};
                 PanelIndex.Children.Add(btn);
+                // ...a připravíme si sekce s jejich UIElementy pro zobrazení
                 m_viewSections.Add(new Tuple<object, UserControl>(s, CreateUserControl(s)));
             }
 
             Redraw();
         }
 
+        /// <summary>
+        /// Překreslení sekcí dle aktuálně zvoleného zobrazení - taby nebo scroll
+        /// </summary>
         private void Redraw()
         {
+            // nejprve je třeba smazat použité zobrazení, hlavně z důvodu odpojení obsahu sekcí
             TabMain.Items.Clear();
             StackMain.Children.Clear();
             if (Sekce == null) return;
 
+            // taby - vygenerujeme jednotlivé záložky
             if (SekceAsTab)
             {
                 TabMain.Visibility = Visibility.Visible;
@@ -78,16 +94,17 @@ namespace TabScrollControl
                 {
                     var tb = new TabItem { Header = s.ToString() };
                     tb.Content = m_viewSections.Single(p => p.Item1 == s).Item2;
-
                     TabMain.Items.Add(tb);
                 }
             }
             else
             {
+                // scroll - vygenerujeme jednotlive sekce
                 TabMain.Visibility = Visibility.Collapsed;
                 ScrollMain.Visibility = Visibility.Visible;
                 foreach (var s in Sekce)
                 {
+                    // TODO: zde bude vhodná optimalizace, kdy se celá ta infrastruktura kolem jedné sekce vytvoří pouze 1x
                     var sp = new StackPanel();
                     sp.Orientation = Orientation.Vertical;
                     var tb = new TextBlock();
@@ -105,10 +122,16 @@ namespace TabScrollControl
             }
         }
 
+        /// <summary>
+        /// Vytvoří user control pro danou sekci
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         private static UserControl CreateUserControl(object s)
         {
             UserControl uc = null;
             var type = s.GetType();
+            // zjistíme jestli je nastaven atribut explicitně určující UIElement, který se má použít pro zobrazení
             var attr = type.GetCustomAttributes(typeof(ViewTypeAttribute), false).FirstOrDefault();
             if (attr != null)
             {
@@ -118,36 +141,54 @@ namespace TabScrollControl
             }
             else
             {
+                // ...pokud nebyl UIElement nastaven, tak implicitně toto
                 uc = new UserControl();
             }
 
             return uc;
         }
 
+        /// <summary>
+        /// Příznak zda má být vditelná osnova
+        /// </summary>
         public bool IndexVisible
         {
             get => (bool)GetValue(IndexVisibleProperty);
             set => SetValue(IndexVisibleProperty, value);
         }
 
+        /// <summary>
+        /// Popisek osnovy
+        /// </summary>
         public string IndextTitle
         {
             get => (string)GetValue(IndextTitleProperty);
             set => SetValue(IndextTitleProperty, value);
         }
 
+        /// <summary>
+        /// Příznak jestli se mají zobrazit sekce v tabech (TRUE) anebo jako scroll (FALSE)
+        /// </summary>
         public bool SekceAsTab
         {
             get => (bool)GetValue(SekceAsTabProperty);
             set => SetValue(SekceAsTabProperty, value);
         }
 
+        /// <summary>
+        /// Kolekce sekcí, které se mají v komponentě zobrazovat
+        /// </summary>
         public List<object> Sekce
         {
             get => (List<object>)GetValue(SekceProperty);
             set => SetValue(SekceProperty, value);
         }
 
+        /// <summary>
+        /// Událost při změně titulku osnovy
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
         private static void OnIndextTitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is TabScrollContainer ctrl)) return;
@@ -155,6 +196,11 @@ namespace TabScrollControl
             ctrl.IndexTitle.Text = text;
         }
 
+        /// <summary>
+        /// Událost při změně viditelnosti osnovy
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
         private static void OnIndexVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is TabScrollContainer ctrl)) return;
@@ -162,12 +208,22 @@ namespace TabScrollControl
             ctrl.PanelLeft.Visibility = state ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Událost při změně typu zobrazení - tab/scroll
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
         private static void OnSekceAsTabChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is TabScrollContainer ctrl)) return;
             ctrl.Redraw();
         }
 
+        /// <summary>
+        /// Událost při změně kolekce se sekcemi - POZOR: nereaguje na změny uvnitř kolekce, jako např. přidání nebo odebrání
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
         private static void OnSekceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is TabScrollContainer ctrl)) return;
