@@ -1,0 +1,42 @@
+﻿<Window xmlns:tabScrollControl="clr-namespace:TabScrollControl;assembly=TabScrollControl"    
+        x:Class="TabScrollDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TabScrollDemo"
+        d:DataContext="{d:DesignInstance local:MainWindowModel}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid x:Name="Section">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <CheckBox Grid.Row="0" Name="Cb" Content="Přepnout vzhled" IsChecked="True" />
+        <CheckBox Grid.Row="1" Name="CbIndex" Content="Skryt osnovu" IsChecked="True" />
+        <tabScrollControl:TabScrollContainer Grid.Row="2" x:Name="Tbc" 
+            Sekce="{Binding Sekce}" 
+            SekceAsTab="{Binding ElementName=Cb, Path=IsChecked}" 
+            IndexVisible="{Binding ElementName=CbIndex, Path=IsChecked}" 
+            IndextTitle="MojeOsnova"
+                                             >
+            <tabScrollControl:TabScrollContainer.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="FontSize" Value="24" />
+                    <Setter Property="Margin" Value="10 5 10 5" />
+                </Style>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Blue" />
+                    <Setter Property="BorderThickness" Value="1" />
+                </Style>
+            </tabScrollControl:TabScrollContainer.Resources>
+        </tabScrollControl:TabScrollContainer>
+    </Grid>
+</Window>

@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="TabScrollDemo.EditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TabScrollDemo"
+             d:DataContext="{d:DesignInstance local:EditViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Vertical">
+            <Label Content="Nazev:"/>
+            <TextBox Text="{Binding Nazev}" />
+        </StackPanel>
+        <StackPanel Orientation="Vertical">
+            <Label Content="Mesto:"/>
+            <TextBox Text="{Binding Mesto}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
