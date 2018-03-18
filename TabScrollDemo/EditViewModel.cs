@@ -11,7 +11,7 @@ namespace TabScrollDemo
 
         public override string ToString()
         {
-            return $"EditViewModel: {Nazev}";
+            return $"Edit: {Nazev} {Mesto}";
         }
     }
 }

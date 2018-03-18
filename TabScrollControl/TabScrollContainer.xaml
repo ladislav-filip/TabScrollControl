@@ -10,7 +10,7 @@
         <StackPanel Orientation="Horizontal">
             <StackPanel Name="PanelLeft">
                 <StackPanel>
-                    <TextBlock Name="IndexTitle" Text="Osnova" />
+                    <TextBlock Name="TextIndexTitle" Text="Osnova" />
                 </StackPanel>
                 <StackPanel Name="PanelIndex" Orientation="Vertical">
                     <Button Content="Sekce 1" />

@@ -24,7 +24,7 @@
             Sekce="{Binding Sekce}" 
             SekceAsTab="{Binding ElementName=Cb, Path=IsChecked}" 
             IndexVisible="{Binding ElementName=CbIndex, Path=IsChecked}" 
-            IndextTitle="MojeOsnova"
+            IndexTitle="MojeOsnova"
                                              >
             <tabScrollControl:TabScrollContainer.Resources>
                 <Style TargetType="Button">
