@@ -63,16 +63,38 @@ namespace TabScrollControl
             
             m_viewSections = new List<Tuple<object, UserControl>>();
 
+            var index = 0;
             // vytvoříme tlačítka v osnově
             foreach (var s in Sekce)
             {
                 var btn = new Button {Content = s.ToString()};
+                btn.Tag = index++;
+                btn.Click += BtnSekceClick;
                 PanelIndex.Children.Add(btn);
                 // ...a připravíme si sekce s jejich UIElementy pro zobrazení
                 m_viewSections.Add(new Tuple<object, UserControl>(s, CreateUserControl(s)));
             }
 
             Redraw();
+        }
+
+        /// <summary>
+        /// Kliknutí na tlačítko sekce v osnově - focusne danou sekci
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="routedEventArgs"></param>
+        private void BtnSekceClick(object o, RoutedEventArgs routedEventArgs)
+        {
+            var btn = (Button) o;
+            var index = (int) btn.Tag;
+            if (SekceAsTab)
+            {
+                TabMain.SelectedIndex = index;
+            }
+            else
+            {
+                ((StackPanel)StackMain.Children[index]).BringIntoView();
+            }
         }
 
         /// <summary>
